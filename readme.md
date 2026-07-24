@@ -3,9 +3,15 @@
 > **Important:** This repository is community driven, not officially supported by avalonia team and is not part of the official Avalonia project—it's only a proof of concept demonstrating how markup can be written purely in C#. For real-world projects use Avalonia's supported XAML approach.
 
 # Avalonia.Markup.Declarative
-Write Avalonia UI with C# like a Gigachad 🗿
+Write Avalonia UI with C# like a Boss 🗿
 
 *Avalonia.Markup.Declarative* is a C#-first authoring layer over Avalonia controls. The current API is compiled-binding-first and source-generator-driven, with public patterns intentionally aligned with Avalonia's `DataContext`, binding, style, and selector model.
+
+## real projects that using Avalonia.Markup.Declarative
+
+https://github.com/gritsenko/pix2d - Pix2d graphic editor for indie developers
+
+*feel free to add your project*
 
 ## Installation
 
