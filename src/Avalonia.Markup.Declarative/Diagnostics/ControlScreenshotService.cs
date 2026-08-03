@@ -403,6 +403,20 @@ public static class ControlScreenshotService
         return stream.ToArray();
     }
 
+    /// <remarks>
+    /// The raw buffer must really be BGRA, as <see cref="CapturedImage"/> promises: <see cref="Crop"/>,
+    /// <see cref="Resample"/> and the compare diff all rebuild a PNG from it through a
+    /// <see cref="PixelFormat.Bgra8888"/> <see cref="WriteableBitmap"/>, and the diff's marker color is a
+    /// BGRA constant.
+    /// <para>
+    /// <b>Which is why the copy goes through a locked framebuffer.</b> The
+    /// <c>CopyPixels(PixelRect, IntPtr, …)</c> overload copies in the bitmap's <em>own</em> format, and that
+    /// is platform-dependent — <c>Bgra8888</c> on Windows but <c>Rgba8888</c> on macOS — so reading it as
+    /// BGRA swapped red and blue in every image rebuilt from the buffer (a `screenshot_region` crop, any
+    /// scaled capture, the compare diff) while a directly-saved capture looked fine. Copying into a
+    /// framebuffer declared Bgra8888 makes the platform convert, so the invariant holds everywhere.
+    /// </para>
+    /// </remarks>
     private static CapturedImage Capture(RenderTargetBitmap bitmap)
     {
         var png = Encode(bitmap);
@@ -410,14 +424,13 @@ public static class ControlScreenshotService
         var stride = size.Width * 4;
         var bgra = new byte[stride * size.Height];
 
-        var handle = GCHandle.Alloc(bgra, GCHandleType.Pinned);
-        try
+        using var normalized = new WriteableBitmap(size, StandardDpi, PixelFormat.Bgra8888, AlphaFormat.Premul);
+        using (var frameBuffer = normalized.Lock())
         {
-            bitmap.CopyPixels(new PixelRect(0, 0, size.Width, size.Height), handle.AddrOfPinnedObject(), bgra.Length, stride);
-        }
-        finally
-        {
-            handle.Free();
+            bitmap.CopyPixels(frameBuffer);
+
+            for (var y = 0; y < size.Height; y++)
+                Marshal.Copy(IntPtr.Add(frameBuffer.Address, y * frameBuffer.RowBytes), bgra, y * stride, stride);
         }
 
         return new CapturedImage(png, bgra, size);
