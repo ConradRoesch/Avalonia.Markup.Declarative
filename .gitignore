@@ -219,3 +219,5 @@ src/Web/Avalonia.Web.Blazor/Interop/Typescript/*.js
 src/repomix-output.xml
 
 TemplateSmokeTest
+
+.playwright-mcp/
