@@ -1,8 +1,9 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Declarative;
+using Avalonia.Markup.Declarative.Tests.ControlsTests;
 
-[assembly: GenerateMarkupExtensionsForAssembly(typeof(Avalonia.Markup.Declarative.Tests.ControlsTests.GeneratedDiagnosticsControl))]
+[assembly: GenerateMarkupExtensionsForAssembly(typeof(GeneratedDiagnosticsControl))]
 
 namespace Avalonia.Markup.Declarative.Tests.ControlsTests;
 
